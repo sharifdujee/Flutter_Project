@@ -2,7 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:quiz_app/screen/registretion_screen.dart';
+import 'package:knowledge/screen/home_screen.dart';
+import 'package:knowledge/screen/registretion_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -114,7 +115,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                     builder: (context) => RegistrationPage()));
                           },
                           icon: Icon(Icons.navigate_next),
-                          label: Text('Sign Up'))
+                          label: Text('Sign Up')),
+                      TextButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Home()));
+                          },
+                          icon: Icon(Icons.navigate_next),
+                          label: Text('Start Quiz')),
                     ],
                   )),
                   /* Container(

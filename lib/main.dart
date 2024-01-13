@@ -1,9 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:quiz_app/firebase_options.dart';
-import 'package:quiz_app/screen/home_screen.dart';
-import 'package:quiz_app/screen/login_screen.dart';
-import 'package:quiz_app/screen/spalash_screen.dart';
+import 'package:knowledge/firebase_options.dart';
+import 'package:knowledge/screen/home_screen.dart';
+import 'package:knowledge/screen/login_screen.dart';
+import 'package:knowledge/screen/spalash_screen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
       title: 'Quiz App',
       theme: ThemeData(
         primaryColor: const Color(0xFF55C1EF),
+        useMaterial3: true,
       ),
      routes: {
         '/': (context)=> SplashScreen(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app/screen/answer.dart';
+import 'package:knowledge/screen/answer.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -74,120 +74,123 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         backgroundColor: Colors.deepOrange,
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                if (_scoreTracker.length == 0)
-                  const SizedBox(
-                    height: 25.0,
-                  ),
-                if (_scoreTracker.length > 0) ..._scoreTracker
-              ],
-            ),
-            Container(
-              width: double.infinity,
-              height: 130.0,
-              margin: const EdgeInsets.only(top: 10.0, left: 30.0, right: 30.0),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
-              decoration: BoxDecoration(
-                color: Colors.deepOrange,
-                borderRadius: BorderRadius.circular(10.0),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+        
+            children: [
+              Row(
+                children: [
+                  if (_scoreTracker.length == 0)
+                    const SizedBox(
+                      height: 25.0,
+                    ),
+                  if (_scoreTracker.length > 0) ..._scoreTracker
+                ],
               ),
-              child: Center(
+              Container(
+                width: double.infinity,
+                height: 130.0,
+                margin: const EdgeInsets.only(top: 10.0, left: 30.0, right: 30.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
+                decoration: BoxDecoration(
+                  color: Colors.deepOrange,
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Center(
+                  child: Text(
+                    _questions[_questionIndex]['question'].toString(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              ...(_questions[_questionIndex]['answers']
+                      as List<Map<String, dynamic>>)
+                  .map((answer) => AnswerScreen(
+                      answerText: answer['answerText'],
+                      answerColor: answerWasSelected
+                          ? answer['score']
+                              ? Colors.green
+                              : Colors.red
+                          : null,
+                      answerTap: () {
+                        if (answerWasSelected) {
+                          return;
+                        }
+                        _questionAnswered(answer['score']);
+                      })),
+              const SizedBox(
+                height: 20.0,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 40.0)),
+                onPressed: () {
+                  if (!answerWasSelected) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                          'Please Select an Answer  before going to the Next Question'),
+                    ));
+                    return;
+                  }
+                  _nextQuestion();
+                },
+                child: Text(endQuiz ? 'Reset Quiz' : 'Next Question'),
+              ),
+              Container(
+                padding: const EdgeInsets.all(20.0),
                 child: Text(
-                  _questions[_questionIndex]['question'].toString(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
+                  '${_totalScore.toString()}/${_questions.length}',
+                  style: const TextStyle(
+                    fontSize: 40.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ),
-            ...(_questions[_questionIndex]['answers']
-                    as List<Map<String, dynamic>>)
-                .map((answer) => AnswerScreen(
-                    answerText: answer['answerText'],
-                    answerColor: answerWasSelected
-                        ? answer['score']
-                            ? Colors.green
-                            : Colors.red
-                        : null,
-                    answerTap: () {
-                      if (answerWasSelected) {
-                        return;
-                      }
-                      _questionAnswered(answer['score']);
-                    })),
-            const SizedBox(
-              height: 20.0,
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 40.0)),
-              onPressed: () {
-                if (!answerWasSelected) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text(
-                        'Please Select an Answer  before going to the Next Question'),
-                  ));
-                  return;
-                }
-                _nextQuestion();
-              },
-              child: Text(endQuiz ? 'Reset Quiz' : 'Next Question'),
-            ),
-            Container(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(
-                '${_totalScore.toString()}/${_questions.length}',
-                style: const TextStyle(
-                  fontSize: 40.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            if (answerWasSelected && !endQuiz)
-              Container(
-                height: 100,
-                width: double.infinity,
-                color: correctAnswerSelected ? Colors.green : Colors.red,
-                child: Center(
-                  child: Text(
-                    correctAnswerSelected
-                        ? 'Well done, you got it right!'
-                        : 'Wrong:/',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                      color: Colors.white,
+              if (answerWasSelected && !endQuiz)
+                Container(
+                  height: 100,
+                  width: double.infinity,
+                  color: correctAnswerSelected ? Colors.green : Colors.red,
+                  child: Center(
+                    child: Text(
+                      correctAnswerSelected
+                          ? 'Well done, you got it right!'
+                          : 'Wrong:/',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            if (endQuiz)
-              Container(
-                height: 100,
-                width: double.infinity,
-                color: Colors.black,
-                child: Center(
-                  child: Text(
-                    _totalScore > 4
-                        ? 'Congratulations! Your Final Score is : $_totalScore'
-                        : 'Your Final Score is : $_totalScore.Better luck next Time',
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                      color: _totalScore > 4 ? Colors.green : Colors.red,
+              if (endQuiz)
+                Container(
+                  height: 100,
+                  width: double.infinity,
+                  color: Colors.black,
+                  child: Center(
+                    child: Text(
+                      _totalScore > 4
+                          ? 'Congratulations! Your Final Score is : $_totalScore'
+                          : 'Your Final Score is : $_totalScore.Better luck next Time',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        color: _totalScore > 4 ? Colors.green : Colors.red,
+                      ),
                     ),
                   ),
-                ),
-              )
-          ],
+                )
+            ],
+          ),
         ),
       ),
     );
@@ -196,77 +199,77 @@ class _HomeState extends State<Home> {
 
 const _questions = [
   {
-    'question': 'How long is New Zealand’s Ninety Mile Beach?',
+    'question': 'What is the purpose of the static keyword in Java?',
     'answers': [
-      {'answerText': '88km, so 55 miles long.', 'score': true},
-      {'answerText': '55km, so 34 miles long.', 'score': false},
-      {'answerText': '90km, so 56 miles long.', 'score': false},
+      {'answerText': 'Marks a variable as constant.', 'score': false},
+      {'answerText': ' Indicates a method can be called without creating an instance of the class', 'score': true},
+      {'answerText': 'Specifies a class is abstract.', 'score': false},
     ],
   },
   {
     'question':
-        'In which month does the German festival of Oktoberfest mostly take place?',
+        'Which collection framework interface provides a dynamic array implementation in Java?',
     'answers': [
-      {'answerText': 'January', 'score': false},
-      {'answerText': 'October', 'score': false},
-      {'answerText': 'September', 'score': true},
+      {'answerText': 'Map', 'score': false},
+      {'answerText': 'Set', 'score': false},
+      {'answerText': 'List', 'score': true},
     ],
   },
   {
-    'question': 'Who composed the music for Sonic the Hedgehog 3?',
+    'question': 'What is the difference between == and .equals() when comparing objects in Java??',
     'answers': [
-      {'answerText': 'Britney Spears', 'score': false},
-      {'answerText': 'Timbaland', 'score': false},
-      {'answerText': 'Michael Jackson', 'score': true},
+      {'answerText': 'Both are used for reference comparison', 'score': false},
+      {'answerText': '== compares the content of objects, while .equals() checks for reference equality', 'score': false},
+      {'answerText': '== is only used for primitive data types, and .equals() is for objects', 'score': true},
     ],
   },
   {
-    'question': 'In Georgia (the state), it’s illegal to eat what with a fork?',
+    'question': 'In Java, which keyword is used to implement multiple inheritance through interfaces?',
     'answers': [
-      {'answerText': 'Hamburgers', 'score': false},
-      {'answerText': 'Fried chicken', 'score': true},
-      {'answerText': 'Pizza', 'score': false},
+      {'answerText': 'extends', 'score': false},
+      {'answerText': 'Implements', 'score': true},
+      {'answerText': 'inherits', 'score': false},
     ],
   },
   {
     'question':
-        'Which part of his body did musician Gene Simmons from Kiss insure for one million dollars?',
+        'What is the purpose of the super keyword in Java?',
     'answers': [
-      {'answerText': 'His tongue', 'score': true},
-      {'answerText': 'His leg', 'score': false},
-      {'answerText': 'His butt', 'score': false},
+      {'answerText': 'Calls the superclass constructor', 'score': true},
+      {'answerText': 'References the current instance of the class', 'score': false},
+      {'answerText': 'Indicates a method is static', 'score': false},
     ],
   },
   {
-    'question': 'In which country are Panama hats made?',
+    'question': 'Which exception is thrown when an array is accessed with an index that is outside its bounds??',
     'answers': [
-      {'answerText': 'Ecuador', 'score': true},
-      {'answerText': 'Panama (duh)', 'score': false},
-      {'answerText': 'Portugal', 'score': false},
+      {'answerText': 'IndexOutOfBoundsException', 'score': true},
+      {'answerText': 'ArrayIndexException', 'score': false},
+      {'answerText': 'OutOfBoundsException', 'score': false},
     ],
   },
   {
-    'question': 'From which country do French fries originate?',
+    'question': 'What is the role of the finalize() method in Java?',
     'answers': [
-      {'answerText': 'Belgium', 'score': true},
-      {'answerText': 'France (duh)', 'score': false},
-      {'answerText': 'Switzerland', 'score': false},
+      {'answerText': 'Marks an object for garbage collection', 'score':false},
+      {'answerText': 'Explicitly deallocates memory', 'score': false},
+      {'answerText': 'Invokes a method before object destruction', 'score': true},
     ],
   },
   {
-    'question': 'Which sea creature has three hearts?',
+    'question': 'Which design principle is violated by the Singleton pattern in Java?',
     'answers': [
-      {'answerText': 'Great White Sharks', 'score': false},
-      {'answerText': 'Killer Whales', 'score': false},
-      {'answerText': 'The Octopus', 'score': true},
+      {'answerText': 'Encapsulation', 'score': true},
+      {'answerText': 'Inheritance', 'score': false},
+      {'answerText': 'Single Responsibility Principle', 'score': false},
     ],
   },
   {
-    'question': 'Which European country eats the most chocolate per capita?',
+    'question': 'What is the purpose of the transient keyword in Java??',
     'answers': [
-      {'answerText': 'Belgium', 'score': false},
-      {'answerText': 'The Netherlands', 'score': false},
-      {'answerText': 'Switzerland', 'score': true},
+      {'answerText': 'Specifies a variable is constant', 'score': false},
+      {'answerText': 'Indicates that a variable should not be serialized', 'score': true},
+      {'answerText': 'Allows a variable to be accessed from any package', 'score': false},
     ],
   },
 ];
