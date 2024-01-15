@@ -46,6 +46,7 @@ dependencies:
   uuid: ^4.3.3
   image_picker: ^1.0.7
   get: ^4.6.6
+  dropdown_textfield: ^1.0.8
 
 
 flutter_launcher_icons:
